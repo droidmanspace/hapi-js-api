@@ -12,12 +12,6 @@ const SERVER_CONFIG = require("./config");
 const Pack = require("./package");
 const routes = require("./routes");
 
-exports.init = async () => {
-     const server = Hapi.server(SERVER_CONFIG);
-     await server.initialize();
-     return server;
-};
-
 exports.start = async () => {
      const server = Hapi.server(SERVER_CONFIG);
      // register plugins with Hapi server.
@@ -47,11 +41,10 @@ exports.start = async () => {
      });
 
      await server.start();
-     console.log("Server running on %s", server.info.uri);
+
      return server;
 };
 
 process.on("unhandledRejection", (err) => {
-     console.error(err);
      process.exit(1);
 });

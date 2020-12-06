@@ -19,7 +19,7 @@ const getReposFromGithub = async (query) => {
                },
           });
      } catch (error) {
-          console.error(error);
+          throw error;
      }
 };
 
@@ -34,7 +34,6 @@ module.exports.searchRepoController = async (request, h) => {
      switch (request.method) {
           case "get":
                return h.view("github-repo");
-
           case "post":
                const paramsFromRequest = request.payload;
                const { headers, data } = await getReposFromGithub(paramsFromRequest);
