@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+     <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+          <title>GitHub Search</title>
+          <style>
+               #table-container {
+                    display: none;
+               }
+          </style>
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+     </head>
+
+     <body>
+          <div class="container d-flex justify-content-center">
+               <div class="display-3">
+                    {{!--
+                    <input
+                         class="form-control"
+                         id="repo-searchbar"
+                         type="text"
+                         placeholder="Search Repos from Github"
+                    />
+                    --}}
+                    <div id="myDIV">
+                         <button class="btn btn-primary" onclick="getRepos()">Search Node.js Repos</button>
+                    </div>
+               </div>
+          </div>
+          <div id="table-container">
+               <table class="repo-table table table-striped table-bordered table-md" cellspacing="0" width="100%">
+                    <thead>
+                         <tr>
+                              <th class="th-sm">Repo Name</th>
+                              <th class="th-sm">URL</th>
+                              <th class="th-sm">Description</th>
+                              <th class="th-sm">Stars</th>
+                              <th class="th-sm">Author</th>
+                         </tr>
+                    </thead>
+               </table>
+               <div class="container dark">
+                    <div class="row justify-content-center">
+                         <div class="col-sm-4 justify-content-center">
+                              <button onclick="prevPage()" id="btn_prev" class="btn btn-primary">Prev</button>
+                         </div>
+                         <div class="col-sm justify-content-center">Pages: <span id="page"></span></div>
+                         <div class="col-sm justify-content-center">
+                              <button onclick="nextPage()" id="btn_next" class="btn btn-primary">Next</button>
+                         </div>
+                    </div>
+               </div>
+          </div>
+          <script>
+               let current_page = 1;
+               let per_page = 10;
+               let total_pages = "";
+               let q = "nodejs";
+
+               function getRepos(curr = 1) {
+                    let params = {
+                         q,
+                         page: curr,
+                         per_page,
+                    };
+                    $(".table-body").empty();
+                    if (!isAvailable(current_page)) {
+                        
+                         $.post("git", params)
+                              .done(function (res) {
+                                   let items = res.data;
+                                   if (!isAvailable("total_pages")) {
+                                        sessionStorage.setItem("total_pages", JSON.stringify(res.total_pages));
+                                   }
+                                   sessionStorage.setItem(current_page, JSON.stringify(items));
+                                   createTable(items);
+                              })
+                              .fail(function () {
+                                   alert("Try again later...");
+                              });
+                    } else {
+                         
+                         let data = readFromSessionStorage(current_page);
+                         createTable(data);
+                    }
+               }
+
+               function readFromSessionStorage(pageno) {
+                    let data = JSON.parse(sessionStorage.getItem(pageno));
+                    return data;
+               }
+
+               function isAvailable(pageno) {
+                    if (sessionStorage.getItem(pageno) === null) {
+                         return false;
+                    } else {
+                         return true;
+                    }
+               }
+
+               function createTable(response) {
+                    var alldata = response.items;
+                    var alldatahtml = '<tbody class="table-body">';
+                    for (var j = 0; j < alldata.length; j++) {
+                         alldatahtml +=
+                              "<tr><td>" +
+                              alldata[j].name +
+                              "</td><td>" +
+                              alldata[j].html_url +
+                              "</td><td>" +
+                              alldata[j].description +
+                              "</td><td>" +
+                              alldata[j].stargazers_count +
+                              "</td><td>" +
+                              alldata[j].owner.login +
+                              "</td></tr>";
+                    }
+                    alldatahtml += "</tbody>";
+                    $("#table-container").show();
+                    total_pages = JSON.parse(sessionStorage.getItem("total_pages"));
+                    $("#page").text(`${current_page} / ${Number.parseInt(total_pages)}`);
+                    $("#table-container table thead").after(alldatahtml);
+               }
+
+               function nextPage() {
+                    if (current_page < total_pages) {
+                         current_page++;
+                        
+                         getRepos(current_page);
+                    }
+               }
+
+               function prevPage() {
+                    if (current_page > 1) {
+                         current_page--;
+                    
+                         getRepos(current_page);
+                    }
+               }
+          </script>
+          <link
+               rel="stylesheet"
+               href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+               integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+               crossorigin="anonymous"
+          />
+          <script
+               src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+               integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+               crossorigin="anonymous"
+          ></script>
+          <script
+               src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+               integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+               crossorigin="anonymous"
+          ></script>
+     </body>
+</html>
