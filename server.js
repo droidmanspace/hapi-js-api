@@ -6,8 +6,6 @@ const Inert = require("@hapi/inert");
 const HapiSwagger = require("hapi-swagger");
 const Handlebars = require("handlebars");
 
-Handlebars.logger.level = 0; //for Debug
-
 const SERVER_CONFIG = require("./config");
 const Pack = require("./package");
 const routes = require("./routes");
