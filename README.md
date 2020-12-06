@@ -107,3 +107,9 @@ Use the [GitHub Search API](https://developer.github.com/v3/guides/traversing-wi
 
 - Don't forget documentation (inline, swagger, etc.).
 - The pagination between your local application and the GitHub results should be synced
+
+### SERVER Details
+- PORT - 5000
+
+
+
